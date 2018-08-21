@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/url"
 	"os"
+	"time"
 
 	"github.com/mattn/go-zglob"
 	"golang.org/x/net/html"
@@ -18,7 +19,7 @@ var (
 
 func init() {
 	flag.StringVar(&filesGlob, "files", "**/*.html", "glob of files to cache bust")
-	flag.StringVar(&version, "version", "", "version to update")
+	flag.StringVar(&version, "version", time.Now().Format("2006010215040507"), "version to update")
 	flag.StringVar(&queryStringKey, "queryKey", "cb", "query string key for asset versioning")
 
 	flag.Parse()
