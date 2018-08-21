@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/url"
 	"os"
+	"regexp"
 	"time"
 
 	"github.com/mattn/go-zglob"
@@ -15,14 +16,19 @@ var (
 	filesGlob      string
 	version        string
 	queryStringKey string
+	ignoreRegexStr string
+	ignoreRegex    *regexp.Regexp
 )
 
 func init() {
 	flag.StringVar(&filesGlob, "files", "**/*.html", "glob of files to cache bust")
 	flag.StringVar(&version, "version", time.Now().Format("2006010215040507"), "version to update")
 	flag.StringVar(&queryStringKey, "queryKey", "cb", "query string key for asset versioning")
+	flag.StringVar(&ignoreRegexStr, "ignore", "", "urls to ignore")
 
 	flag.Parse()
+
+	ignoreRegex = regexp.MustCompile(ignoreRegexStr)
 }
 
 func main() {
@@ -81,6 +87,10 @@ func processAttr(attr *html.Attribute) {
 
 	if val.Host != "" {
 		// only version local files
+		return
+	}
+
+	if ignoreRegex.MatchString(val.String()) {
 		return
 	}
 
